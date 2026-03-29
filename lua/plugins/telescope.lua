@@ -59,7 +59,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
             --
             defaults = {
                 path_display = { "reverse" },
-                file_ignore_patterns = { "__pycache__", ".venv", ".mypy_cache" },
+                file_ignore_patterns = { ".git/", ".DS_Store", "__pycache__", ".venv/", ".mypy_cache", ".ruff_cache", ".pytest*", ".terraform" },
                 mappings = {
                     i = {
                         ["<C-k>"] = actions.move_selection_previous, -- move to prev result

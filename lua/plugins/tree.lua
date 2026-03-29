@@ -11,7 +11,6 @@ return {
         nvimtree.setup({
             view = {
                 width = 35,
-                relativenumber = true,
             },
             update_focused_file = {
                 enable = true,
@@ -41,7 +40,7 @@ return {
                 },
             },
             filters = {
-                custom = { ".DS_Store" },
+                custom = { ".DS_Store", "__pycache__", ".venv/", ".mypy_cache", ".git/", ".ruff_cache", ".pytest*" },
             },
             git = {
                 ignore = false,
