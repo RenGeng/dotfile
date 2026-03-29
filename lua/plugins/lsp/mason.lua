@@ -27,6 +27,7 @@ return {
             ensure_installed = {
                 "prettier", -- prettier formatter
                 "stylua",   -- lua formatter
+                "pyright",
                 "ruff",
                 "ansible-language-server",
                 "ansible-lint",
@@ -35,7 +36,6 @@ return {
                 "lua-language-server",
                 "mypy",
                 "prettier",
-                "python-lsp-server",
                 "shellcheck",
                 "shfmt",
                 "terraform-ls",

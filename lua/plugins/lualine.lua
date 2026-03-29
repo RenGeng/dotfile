@@ -62,6 +62,19 @@ return {
                         cond = lazy_status.has_updates,
                         color = { fg = "#ff9e64" },
                     },
+                    {
+                        function()
+                            local venv = require("venv-selector").venv()
+                            if venv then
+                                return venv
+                            end
+                            return ""
+                        end,
+                        cond = function()
+                            return package.loaded["venv-selector"] ~= nil
+                        end,
+                        icon = "🐍",
+                    },
                     { "encoding" },
                     { "fileformat" },
                     { "filetype" },

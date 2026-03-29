@@ -23,9 +23,6 @@ return {
         }
     },
     config = function()
-        -- import lspconfig plugin
-        local lspconfig = require("lspconfig")
-
         -- import mason_lspconfig plugin
         local mason_lspconfig = require("mason-lspconfig")
         mason_lspconfig.setup()
@@ -85,6 +82,7 @@ return {
 
         -- used to enable autocompletion (assign to every lsp server config)
         local capabilities = cmp_nvim_lsp.default_capabilities()
+        vim.lsp.config("*", { capabilities = capabilities })
 
         -- Change the Diagnostic symbols in the sign column (gutter)
         -- (not in youtube nvim video)
@@ -106,8 +104,7 @@ return {
             },
         })
 
-        lspconfig.ruff.setup({
-            capabilities = capabilities,
+        vim.lsp.config("ruff", {
             settings = {
                 ruff = {
                     -- enable ruff lsp
@@ -117,27 +114,50 @@ return {
                 },
             },
         })
-        mason_lspconfig.setup_handlers({
-            -- default handler for installed servers
-            function(server_name)
-                lspconfig[server_name].setup({
-                    capabilities = capabilities,
-                })
-            end,
 
-            -- ["gitlab-ci-ls"] = function()
-            --     lspconfig["gitlab-ci-ls"].setup({
-            --         capabilities = capabilities,
-            --         on_attach = function(client, bufnr)
-            --             vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-            --                 pattern = "*.gitlab-ci*.{yml,yaml}",
-            --                 callback = function()
-            --                     vim.bo.filetype = "yaml.gitlab"
-            --                 end,
-            --             })
-            --         end,
-            --     })
-            -- end,
+        vim.lsp.config("pyright", {
+            settings = {
+                python = {
+                    analysis = {
+                        autoSearchPaths = true,
+                        useLibraryCodeForTypes = true,
+                        diagnosticMode = "workspace",
+                        extraPaths = { "." },
+                    },
+                    pythonPath = "./.venv/bin/python"
+                }
+            }
+        })
+
+        -- -- vim.lsp.config("pylsp", {
+        --     settings = {
+        --         pylsp = {
+        --             plugins = {
+        --                 -- Disable redundant linting and formatting (ruff handles these)
+        --                 pycodestyle = { enabled = false },
+        --                 mccabe = { enabled = false },
+        --                 pyflakes = { enabled = false },
+        --                 flake8 = { enabled = false },
+        --                 yapf = { enabled = false },
+        --                 autopep8 = { enabled = false },
+        --                 pylint = { enabled = false },
+        --                 -- Enable Jedi for navigation (gd, hover, etc.)
+        --                 jedi_definition = { enabled = true, follow_imports = true, follow_builtin_imports = true },
+        --                 jedi_hover = { enabled = true },
+        --                 jedi_references = { enabled = true },
+        --                 jedi_completion = { enabled = true },
+        --             }
+        --         }
+        --     }
+        -- })
+
+        mason_lspconfig.setup_handlers({
+            function(server_name)
+                if server_name == "pylsp" then
+                    return
+                end
+                vim.lsp.enable(server_name)
+            end,
         })
     end,
 }

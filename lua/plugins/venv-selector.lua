@@ -8,19 +8,17 @@ return {
     lazy = false,
     ---@type venv-selector.Config
     opts = {
-        settings = {     -- Note: In newer versions, options are often under 'settings'
+        settings = { -- Note: In newer versions, options are often under 'settings'
             options = {
                 notify_user_on_venv_activation = true,
-                enable_cached_venvs = true,     -- Change to true so it remembers your choice
+                enable_cached_venvs = true, -- Change to false so it doesn't remember your choice
                 cached_venv_automatic_activation = true,
                 activate_venv_in_terminal = true,
-                require_lsp_activation = true,     -- Disable this for now
+                require_lsp_activation = false, -- Disable this for now
             },
             search = {
                 -- This looks for a .venv or venv folder in your current project
-                my_venvs = {
-                    command = "fd -H python$ . --max-depth 4"
-                },
+                my_venvs = { command = "fd -H -u python$ . --max-depth 4" }
             },
         },
     }
