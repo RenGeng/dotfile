@@ -152,6 +152,13 @@ return {
         --     }
         -- })
 
+        -- terraform-ls: needs explicit config for root detection + indexing
+        -- IMPORTANT: run `terraform init` in project so provider schemas are available
+        vim.lsp.config("terraformls", {
+            filetypes = { "terraform", "terraform-vars" },
+            root_markers = { "*.tf", ".terraform", ".git" },
+        })
+
         mason_lspconfig.setup_handlers({
             function(server_name)
                 if server_name == "pylsp" then
