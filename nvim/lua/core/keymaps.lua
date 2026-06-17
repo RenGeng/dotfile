@@ -96,3 +96,59 @@ vim.keymap.set("n", "<leader>Sp", '<cmd>lua require("spectre").open_file_search(
 vim.keymap.set("n", "<leader>csv", "<cmd>RainbowDelim<CR>", { desc = "Enable Rainbow CSV" })
 vim.keymap.set("n", "<leader>csva", "<cmd>RainbowAlign<CR>", { desc = "Rainbow CSV Align" })
 vim.keymap.set("n", "<leader>csvs", "<cmd>RainbowShrink<CR>", { desc = "Rainbow CSV Shrink" })
+
+-- dbt: jump to compiled version of current file
+vim.keymap.set("n", "gC", function()
+    local path = vim.fn.expand("%:p")
+    local compiled, n = path:gsub("/dbt/", "/dbt/target/compiled/ucr/", 1)
+    if n == 0 then
+        vim.notify("Not inside a dbt/ folder", vim.log.levels.WARN)
+        return
+    end
+    if vim.fn.filereadable(compiled) == 0 then
+        vim.notify("Compiled file not found: " .. compiled, vim.log.levels.WARN)
+        return
+    end
+    vim.cmd("edit " .. vim.fn.fnameescape(compiled))
+end, { desc = "[G]o to dbt [C]ompiled file" })
+
+-- dbt: jump to compiled version of file under cursor
+-- vim.keymap.set("n", "gC", function()
+--     local token = vim.fn.expand("<cfile>")
+--     if token == nil or token == "" then
+--         token = vim.fn.expand("<cword>")
+--     end
+--     if token == nil or token == "" then
+--         vim.notify("No file/word under cursor", vim.log.levels.WARN)
+--         return
+--     end
+--
+--     -- strip extension if user already had one, then force .sql
+--     local name = token:gsub("%.sql$", ""):gsub("%.SQL$", "")
+--     local needle = name .. ".sql"
+--
+--     -- find dbt root by walking up from cwd looking for a dbt/ dir
+--     local root = vim.fs.find({ "dbt" }, { upward = true, type = "directory", path = vim.fn.getcwd() })[1]
+--     if root == nil then
+--         -- fallback: assume cwd is dbt project root
+--         root = vim.fn.getcwd() .. "/dbt"
+--     end
+--     local search_dir = root .. "/target/compiled/ucr"
+--     if vim.fn.isdirectory(search_dir) == 0 then
+--         vim.notify("Compiled dir not found: " .. search_dir, vim.log.levels.WARN)
+--         return
+--     end
+--
+--     local matches = vim.fs.find(needle, { path = search_dir, type = "file", limit = 50 })
+--     if #matches == 0 then
+--         vim.notify("No compiled file matching: " .. needle, vim.log.levels.WARN)
+--         return
+--     end
+--     if #matches == 1 then
+--         vim.cmd("edit " .. vim.fn.fnameescape(matches[1]))
+--         return
+--     end
+--     vim.ui.select(matches, { prompt = "Compiled file:" }, function(choice)
+--         if choice then vim.cmd("edit " .. vim.fn.fnameescape(choice)) end
+--     end)
+-- end, { desc = "[G]o to dbt [C]ompiled file under cursor" })
