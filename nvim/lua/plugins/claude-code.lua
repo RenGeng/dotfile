@@ -10,6 +10,8 @@ return {
             },
 
             provider = "native",
+            -- provider = "snacks",
+
             fix_streamed_paste = "auto",
             -- split_width_percentage = 0.40,
 

@@ -134,6 +134,7 @@ cmd-alt-ctrl-d = 'workspace 3'
 cmd-alt-ctrl-s = 'workspace 4'
 cmd-alt-ctrl-c = 'workspace 5'
 cmd-alt-ctrl-o = 'workspace 6'
+cmd-alt-ctrl-n = 'workspace 7'
 
 
 cmd-alt-ctrl-1 = 'workspace 1'
@@ -169,6 +170,12 @@ cmd-alt-ctrl-shift-o = [
     'move-node-to-workspace 6',
     'exec-and-forget sketchybar --trigger aerospace_focus_change',
 ]
+
+cmd-alt-ctrl-shift-n = [
+    'move-node-to-workspace 7',
+    'exec-and-forget sketchybar --trigger aerospace_focus_change',
+]
+
 
 cmd-alt-ctrl-shift-1 = [
     'move-node-to-workspace 1',
@@ -274,3 +281,7 @@ run = "move-node-to-workspace 6"
 [[on-window-detected]]
 if.app-id = "org.flameshot"
 run = "layout floating"
+
+[[on-window-detected]]
+if.app-id = "md.obsidian"
+run = "move-node-to-workspace 7"

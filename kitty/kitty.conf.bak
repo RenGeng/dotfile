@@ -1,40 +1,52 @@
+include ./themes/teide_darker.conf
 #map ctrl+f      launch --location=hsplit --allow-remote-control kitty +kitten search.py @active-kitty-window-id
 #map ctrl+f launch --type=overlay --stdin-source=@screen_scrollback /home/linuxbrew/.linuxbrew/bin/fzf --no-sort --no-mouse --exact -i
-map ctrl+shift+f combine : show_scrollback : send_text normal,application /
+# map cmd+f show_scrollback
+map cmd+g show_last_command_output
 
+map cmd+f launch --allow-remote-control kitty +kitten kitty_search/search.py @active-kitty-window-id
 
-# Monokai Soda theme BEGIN
-
-background #191919
-foreground #c4c4b5
-cursor #f6f6ec
-selection_background #343434
-color0 #191919
-color8 #615e4b
-color1 #f3005f
-color9 #f3005f
-color2 #97e023
-color10 #97e023
-color3 #fa8419
-color11 #dfd561
-color4 #9c64fe
-color12 #9c64fe
-color5 #f3005f
-color13 #f3005f
-color6 #57d1ea
-color14 #57d1ea
-color7 #c4c4b5
-color15 #f6f6ee
-selection_foreground #191919
-
+# # Monokai Soda theme BEGIN
+#
+# background #191919
+# foreground #c4c4b5
+# cursor #f6f6ec
+# selection_background #343434
+# color0 #191919
+# color8 #615e4b
+# color1 #f3005f
+# color9 #f3005f
+# color2 #97e023
+# color10 #97e023
+# color3 #fa8419
+# color11 #dfd561
+# color4 #9c64fe
+# color12 #9c64fe
+# color5 #f3005f
+# color13 #f3005f
+# color6 #57d1ea
+# color14 #57d1ea
+# color7 #c4c4b5
+# color15 #f6f6ee
+# selection_foreground #191919
+#
+#
+# # Monokai Soda theme END
+background_opacity 1
 cursor_trail 1
 cursor_trail_decay 0.1 0.4
 cursor_trail_start_threshold 2
 
-# Monokai Soda theme END
 
-
-
+map cmd+& goto_tab 1
+map cmd+é goto_tab 2
+map cmd+" goto_tab 3
+map cmd+' goto_tab 4
+map cmd+( goto_tab 5
+map cmd+§ goto_tab 6
+map cmd+è goto_tab 7
+map cmd+! goto_tab 8
+map cmd+ç goto_tab 9
 
 # vim:fileencoding=utf-8:foldmethod=marker
 
@@ -242,7 +254,7 @@ cursor_trail_start_threshold 2
 
 #: Scrollback {{{
 
-# scrollback_lines 2000
+scrollback_lines 100000
 
 #: Number of lines of history to keep in memory for scrolling back.
 #: Memory is allocated on demand. Negative numbers are (effectively)
@@ -637,7 +649,7 @@ cursor_trail_start_threshold 2
 #: Fade the text in inactive windows by the specified amount (a number
 #: between zero and one, with zero being fully faded).
 
-# hide_window_decorations no
+hide_window_decorations yes
 
 #: Hide the window decorations (title-bar and window borders) with
 #: yes. On macOS, titlebar-only can be used to only hide the titlebar.
@@ -680,6 +692,9 @@ cursor_trail_start_threshold 2
 
 #: Tab bar {{{
 
+tab_bar_style powerline
+
+tab_powerline_style round
 # tab_bar_edge bottom
 
 #: Which edge to show the tab bar on, top or bottom
@@ -981,7 +996,7 @@ allow_remote_control yes
 #: from controlling kitty. Reloading the config will not affect this
 #: setting.
 
-listen_on "unix:$TMPDIR/kitty"
+listen_on "unix:/tmp/mykitty"
 
 #: Tell kitty to listen to the specified unix/tcp socket for remote
 #: control connections. Note that this will apply to all kitty
@@ -1089,7 +1104,7 @@ listen_on "unix:$TMPDIR/kitty"
 #: you are probably better off just hiding the titlebar with
 #: hide_window_decorations.
 
-# macos_option_as_alt no
+macos_option_as_alt no
 
 #: Use the option key as an alt key. With this set to no, kitty will
 #: use the macOS native Option+Key = unicode character behavior. This
@@ -1287,6 +1302,15 @@ listen_on "unix:$TMPDIR/kitty"
 
 #: Window management {{{
 
+
+map f2   kitten window.py +split bottom
+map shift+f2   kitten window.py +split right
+
+map shift+up kitten window.py -jump top
+map shift+down kitten window.py -jump bottom
+map shift+left kitten window.py -jump left
+map shift+right kitten window.py -jump right
+map cmd+w        kitten window.py -close
 # map kitty_mod+enter new_window
 
 #: You can open a new window running an arbitrary program, for
@@ -1342,6 +1366,16 @@ listen_on "unix:$TMPDIR/kitty"
 #: Tab management {{{
 
 # map kitty_mod+right next_tab
+map cmd+left previous_tab
+map cmd+right next_tab
+map cmd+shift+left move_tab_backward
+map cmd+shift+right move_tab_forward
+map cmd+u open_url_with_hints
+map cmd+shift+w close_tab
+map cmd+equal change_font_size current +2.0
+map cmd+minus change_font_size current -2.0
+
+
 # map kitty_mod+left  previous_tab
 # map kitty_mod+t     new_tab
 # map kitty_mod+q     close_tab
@@ -1363,6 +1397,7 @@ listen_on "unix:$TMPDIR/kitty"
 #: the current tab rather than at the end of the tabs list, use::
 
 #:     map ctrl+t new_tab !neighbor [optional cmd to run]
+map cmd+t new_tab_with_cwd
 #: }}}
 
 #: Layout management {{{
@@ -1483,7 +1518,7 @@ listen_on "unix:$TMPDIR/kitty"
 #:     map kitty_mod+f11 clear_terminal scrollback active
 #:     # Scroll the contents of the screen into the scrollback
 #:     map kitty_mod+f12 clear_terminal scroll active
-
+map cmd+l clear_terminal to_cursor_scroll active
 #: If you want to operate on all windows instead of just the current
 #: one, use all instead of active.
 
@@ -1548,7 +1583,7 @@ listen_on "unix:$TMPDIR/kitty"
 
 
 # BEGIN_KITTY_FONTS
-font_family      family="JetBrainsMono Nerd Font Mono"
+font_family      family="Hack Nerd Font Mono"
 bold_font        auto
 italic_font      auto
 bold_italic_font auto

@@ -100,11 +100,23 @@ vim.keymap.set("n", "<leader>csvs", "<cmd>RainbowShrink<CR>", { desc = "Rainbow 
 -- dbt: jump to compiled version of current file
 vim.keymap.set("n", "gC", function()
     local path = vim.fn.expand("%:p")
-    local compiled, n = path:gsub("/dbt/", "/dbt/target/compiled/ucr/", 1)
-    if n == 0 then
-        vim.notify("Not inside a dbt/ folder", vim.log.levels.WARN)
+    local found = vim.fs.find("dbt_project.yml", { upward = true, path = vim.fs.dirname(path) })[1]
+    if not found then
+        vim.notify("dbt_project.yml not found above " .. path, vim.log.levels.WARN)
         return
     end
+    local root = vim.fs.dirname(found)
+    local project
+    for line in io.lines(found) do
+        project = line:match("^%s*name:%s*['\"]?([%w_]+)")
+        if project then break end
+    end
+    if not project then
+        vim.notify("Could not parse name from " .. found, vim.log.levels.WARN)
+        return
+    end
+    local rel = path:sub(#root + 2)
+    local compiled = root .. "/target/compiled/" .. project .. "/" .. rel
     if vim.fn.filereadable(compiled) == 0 then
         vim.notify("Compiled file not found: " .. compiled, vim.log.levels.WARN)
         return
