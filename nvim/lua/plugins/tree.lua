@@ -8,7 +8,24 @@ return {
         vim.g.loaded_netrw = 1
         vim.g.loaded_netrwPlugin = 1
 
+        local api = require("nvim-tree.api")
+
+        local function copy_name_no_ext(node)
+            local name = vim.fn.fnamemodify(node.name, ":r")
+            vim.fn.setreg("+", name)
+            vim.fn.setreg('"', name)
+            vim.notify("Copied " .. name)
+        end
+
+        local function on_attach(bufnr)
+            api.config.mappings.default_on_attach(bufnr)
+            vim.keymap.set("n", "y", function()
+                copy_name_no_ext(api.tree.get_node_under_cursor())
+            end, { buffer = bufnr, noremap = true, silent = true, nowait = true, desc = "Copy name w/o ext" })
+        end
+
         nvimtree.setup({
+            on_attach = on_attach,
             view = {
                 width = 35,
             },

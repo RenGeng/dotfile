@@ -1,0 +1,5 @@
+[plugin]
+deps = [{ use = "yazi-rs/plugins:chmod", rev = "7afba3a" }, { use = "yazi-rs/plugins:smart-enter", rev = "7afba3a" }, { use = "yazi-rs/plugins:jump-to-char", rev = "7afba3a" }]
+
+[flavor]
+deps = [{ use = "sanjinso/monokai-vibrant", rev = "8b68223" }]
