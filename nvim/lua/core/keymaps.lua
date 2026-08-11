@@ -32,10 +32,19 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set("n", "<C-h>", "<C-w><C-h><C-g>", { desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l><C-g>", { desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j><C-g>", { desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k><C-g>", { desc = "Move focus to the upper window" })
+local function win_cycle(dir)
+    local cur = vim.fn.winnr()
+    vim.cmd("wincmd " .. dir)
+    if vim.fn.winnr() == cur then
+        local opp = ({ h = "l", l = "h", j = "k", k = "j" })[dir]
+        vim.cmd("999wincmd " .. opp)
+    end
+    vim.cmd("file")
+end
+vim.keymap.set("n", "<C-h>", function() win_cycle("h") end, { desc = "Focus left window (cycle)" })
+vim.keymap.set("n", "<C-l>", function() win_cycle("l") end, { desc = "Focus right window (cycle)" })
+vim.keymap.set("n", "<C-j>", function() win_cycle("j") end, { desc = "Focus lower window (cycle)" })
+vim.keymap.set("n", "<C-k>", function() win_cycle("k") end, { desc = "Focus upper window (cycle)" })
 -- vim.keymap.set("n", "<C-H>", "<Cmd>5wincmd<LT><CR>", {desc="Increase focused window on left"})
 -- vim.keymap.set("n", "<C-J>", "<Cmd>5wincmd-<CR>", {desc="Increase focused window on down"})
 -- vim.keymap.set("n", "<C-L>", "<Cmd>5wincmd><CR>", {desc="Increase focused window on right"})
