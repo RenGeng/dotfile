@@ -58,7 +58,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
             --  All the info you're looking for is in `:help telescope.setup()`
             --
             defaults = {
-                path_display = { "reverse" },
+                path_display = { "filename_first" },
                 file_ignore_patterns = { ".git/", ".DS_Store", "__pycache__", ".venv/", ".mypy_cache", ".ruff_cache", ".pytest*", ".terraform", "qacrm", "test_integration/**/*.json" },
                 mappings = {
                     i = {

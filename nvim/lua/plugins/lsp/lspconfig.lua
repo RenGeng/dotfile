@@ -152,11 +152,31 @@ return {
         --     }
         -- })
 
+        -- yamlls: same server behind VSCode's "yaml.schemas" setting (redhat yaml-language-server)
+        -- globs resolve relative to project root (.git); schemaStore stays on for k8s/gh-actions/docker-compose
+        vim.lsp.config("yamlls", {
+            settings = {
+                yaml = {
+                    validate = true,
+                    schemas = {
+                        ["https://raw.githubusercontent.com/lightdash/lightdash/main/packages/common/src/schemas/json/lightdash-dbt-2.0.json"]     = {
+                            "/**/models/**/*.yml",
+                            "/**/models/**/*.yaml",
+                        },
+                        ["https://raw.githubusercontent.com/lightdash/lightdash/main/packages/common/src/schemas/json/chart-as-code-1.0.json"]     = { "lightdash/charts/*.yml" },
+                        ["https://raw.githubusercontent.com/lightdash/lightdash/main/packages/common/src/schemas/json/dashboard-as-code-1.0.json"] = { "lightdash/dashboards/*.yml" },
+                    },
+                },
+            },
+        })
+
         -- terraform-ls: needs explicit config for root detection + indexing
         -- IMPORTANT: run `terraform init` in project so provider schemas are available
         vim.lsp.config("terraformls", {
             filetypes = { "terraform", "terraform-vars" },
             root_markers = { "*.tf", ".terraform", ".git" },
+            -- ponytail: upstream on_attach calls vim.lsp.codelens.enable (nvim 0.12+); drop this after upgrading
+            on_attach = function() end,
         })
 
         mason_lspconfig.setup_handlers({

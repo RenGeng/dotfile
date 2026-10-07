@@ -1,5 +1,7 @@
 -- https://github.com/kvndrsslr/sketchybar-app-font
 return {
+    ["Claude"] = ":claude:",
+    ["Granola"] = ":granola:",
     ["Typora"] = ":text:",
     ["Orion"] = ":orion:",
     ["Orion RC"] = ":orion:",
