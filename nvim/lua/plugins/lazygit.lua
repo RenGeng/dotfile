@@ -1,49 +1,54 @@
+-- lazygit in a snacks terminal float. `q` only hides the float: lazygit keeps running, so reopening
+-- lands exactly where you left it (folded dirs, panel, cursor). Real quit: Q or <c-c>.
+local main = vim.fn.has("mac") == 1 and vim.fn.expand("~/Library/Application Support/lazygit/config.yml")
+    or vim.fn.expand("~/.config/lazygit/config.yml")
+local overlay = vim.fn.stdpath("cache") .. "/lazygit-nvim.yml"
+local cmd = { "lazygit", "-ucf", main .. "," .. overlay }
+local opts = { win = { keys = { term_normal = false } } } -- lazygit needs <esc><esc>
+local term
+
 return {
-	"kdheepak/lazygit.nvim",
-	cmd = {
-		"LazyGit",
-		"LazyGitConfig",
-		"LazyGitCurrentFile",
-		"LazyGitFilter",
-		"LazyGitFilterCurrentFile",
-	},
-	-- optional for floating window border decoration
-	dependencies = {
-		"nvim-lua/plenary.nvim",
-	},
-	init = function()
-		-- "e" in lazygit: stash file in parent nvim ($NVIM), quit lazygit, open it in the window lazygit came from
-		local pending
-		function _G.LazygitOpen(file, line)
-			pending = { file = file, line = line }
-			return ""
-		end
-		vim.g.lazygit_on_exit_callback = function()
-			if not pending then
-				return
-			end
-			vim.cmd("edit +" .. pending.line .. " " .. vim.fn.fnameescape(pending.file))
-			pending = nil
-		end
-		-- ponytail: filenames containing ' break the vim string, fine in practice
-		local cmd = [[nvim --server "$NVIM" --remote-expr "v:lua.LazygitOpen('"{{filename}}"', %s)" && nvim --server "$NVIM" --remote-send q]]
-		local overlay = vim.fn.stdpath("cache") .. "/lazygit-nvim.yml"
-		vim.fn.writefile({
-			"os:",
-			"  editPreset: nvim-remote",
-			"  edit: |-",
-			"    " .. cmd:format("1"),
-			"  editAtLine: |-",
-			"    " .. cmd:format("{{line}}"),
-		}, overlay)
-		local main = vim.fn.has("mac") == 1 and vim.fn.expand("~/Library/Application Support/lazygit/config.yml")
-			or vim.fn.expand("~/.config/lazygit/config.yml")
-		vim.g.lazygit_use_custom_config_file_path = 1
-		vim.g.lazygit_config_file_path = { main, overlay }
-	end,
-	-- setting the keybinding for LazyGit with 'keys' is recommended in
-	-- order to load the plugin when the command is run for the first time
-	keys = {
-		{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "Open lazy git" },
-	},
+    "folke/snacks.nvim",
+    init = function()
+        -- called by lazygit via $NVIM: hide the float; "e" then opens the file in the window lazygit came from
+        function _G.LazygitHide(file, line)
+            vim.schedule(function()
+                term:hide()
+                vim.cmd("checktime")
+                if file then
+                    vim.cmd("edit +" .. line .. " " .. vim.fn.fnameescape(file))
+                end
+            end)
+            return ""
+        end
+
+        -- ponytail: filenames containing ' break the vim string, fine in practice
+        local remote = [[nvim --server "$NVIM" --remote-expr "v:lua.LazygitHide(%s)"]]
+        vim.fn.writefile({
+            "os:",
+            "  editPreset: nvim-remote",
+            "  edit: |-",
+            "    " .. remote:format([['"{{filename}}"', 1]]),
+            "  editAtLine: |-",
+            "    " .. remote:format([['"{{filename}}"', {{line}}]]),
+            "keybinding:",
+            "  universal:",
+            "    quit: <disabled>",
+            "customCommands:",
+            "  - key: q",
+            "    context: global",
+            "    description: hide (lazygit keeps running)",
+            "    command: |-",
+            "      " .. remote:format(""),
+        }, overlay)
+    end,
+    keys = {
+        {
+            "<leader>lg",
+            function()
+                term = Snacks.terminal(cmd, opts)
+            end,
+            desc = "Open lazy git",
+        },
+    },
 }

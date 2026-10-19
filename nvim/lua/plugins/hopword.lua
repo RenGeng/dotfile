@@ -6,10 +6,10 @@ return {
 		multi_windows = true,
 	},
 
-	config = function()
+	config = function(_, opts)
 		local hop = require("hop")
 		local directions = require("hop.hint").HintDirection
-		hop.setup()
+		hop.setup(opts)
 		vim.keymap.set("", "<leader>gw", function()
 			hop.hint_words()
 		end, { remap = true })
