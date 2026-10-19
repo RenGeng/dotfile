@@ -1,15 +1,13 @@
 # Packages
 brew install lua
 brew install switchaudio-osx
-brew install nowplaying-cli
 
 brew tap FelixKratz/formulae
 brew install sketchybar
 
 # Fonts
 brew install --cask sf-symbols
-brew install --cask homebrew/cask-fonts/font-sf-mono
-brew install --cask homebrew/cask-fonts/font-sf-pro
+brew install --cask font-jetbrains-mono-nerd-font
 
 curl -L https://github.com/kvndrsslr/sketchybar-app-font/releases/latest/download/sketchybar-app-font.ttf -o $HOME/Library/Fonts/sketchybar-app-font.ttf
 

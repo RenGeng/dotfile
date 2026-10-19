@@ -1,15 +1,4 @@
-local is_dark_mode = require("is_dark_mode") == "dark"
-
-local colors = {}
-local with_alpha = function(color, alpha)
-	if alpha > 1.0 or alpha < 0.0 then
-		return color
-	end
-	return (color & 0x00ffffff) | (math.floor(alpha * 255.0) << 24)
-end
-colors.with_alpha = with_alpha
-
-local theme = {
+local colors = {
 	-- Base16 Default Dark Theme
 	dark = 0xff181818,
 	dark_grey = 0xff282828,
@@ -32,27 +21,12 @@ local theme = {
 	transparent = 0x00000000,
 	black = 0xff000000,
 	white = 0xffffffff,
-	github_blue = 0xff4170ae,
 }
 
-for k, v in pairs(theme) do
-	colors[k] = v
-end
-
-if is_dark_mode then
-	colors.fg = theme.silver
-	colors.fg_highlight = theme.blue
-	colors.fg_secondary = theme.silver
-	colors.bg = theme.black
-	colors.border = theme.dark
-	colors.active = theme.white
-else
-	colors.fg = theme.dark
-	colors.fg_highlight = theme.github_blue
-	colors.fg_secondary = theme.light_grey
-	colors.bg = theme.light
-	colors.border = theme.silver
-	colors.active = theme.white
-end
+colors.fg = colors.silver
+colors.fg_highlight = colors.blue
+colors.fg_secondary = colors.silver
+colors.bg = colors.black
+colors.border = colors.dark
 
 return colors

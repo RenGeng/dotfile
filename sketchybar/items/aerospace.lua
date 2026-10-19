@@ -5,6 +5,7 @@ local app_icons = require("helpers.app_icons")
 
 sbar.add("event", "aerospace_workspace_change")
 sbar.add("event", "aerospace_focus_change")
+sbar.add("event", "aerospace_mode_change")
 
 local max_workspaces = 9
 local focused_workspace_index = nil
@@ -18,7 +19,7 @@ local toggle_windows = sbar.add("item", {
     },
     label = { width = 0, y_offset = 0.5, padding_right = 15 },
     background = {
-        color = colors.with_alpha(colors.bg, 0),
+        color = colors.transparent,
         border_color = colors.fg_highlight,
     },
     padding_right = 0,
@@ -30,7 +31,7 @@ toggle_windows:subscribe("mouse.entered", function()
         toggle_windows:set({
             label = { string = is_show_windows and icons.chevron.left or icons.chevron.right, width = "dynamic" },
             background = {
-                color = colors.with_alpha(colors.bg, 1),
+                color = colors.bg,
                 border_width = 2,
             },
         })
@@ -42,7 +43,7 @@ toggle_windows:subscribe("mouse.exited", function()
         toggle_windows:set({
             label = { width = 0 },
             background = {
-                color = colors.with_alpha(colors.bg, 0),
+                color = colors.transparent,
                 border_width = 0,
             },
         })
@@ -58,7 +59,7 @@ toggle_windows:subscribe("aerospace_mode_change", function(ENV)
                     color = colors.white,
                 },
                 background = {
-                    color = colors.with_alpha(colors.blue, 1),
+                    color = colors.blue,
                     border_color = colors.white,
                     border_width = 2,
                 },
@@ -69,7 +70,7 @@ toggle_windows:subscribe("aerospace_mode_change", function(ENV)
                     color = colors.fg,
                 },
                 background = {
-                    color = colors.with_alpha(colors.bg, 0),
+                    color = colors.transparent,
                     border_color = colors.fg_highlight,
                     border_width = 0,
                 },
@@ -88,47 +89,21 @@ local function updateWindows(workspace_index)
         string.format("aerospace list-windows --workspace %s --format '%%{app-name}' --json", workspace_index)
     sbar.exec(get_windows, function(open_windows)
         local icon_line = ""
-        local no_app = true
-        for i, open_window in ipairs(open_windows) do
-            no_app = false
-            local app = open_window["app-name"]
+        for _, open_window in ipairs(open_windows) do
             -- Fallback to default icon if app-specific icon isn't found
-            local lookup = app_icons[app]
-            local icon = ((lookup == nil) and app_icons["default"] or lookup)
-            icon_line = icon_line .. " " .. icon
+            icon_line = icon_line .. " " .. (app_icons[open_window["app-name"]] or app_icons["default"])
+        end
+        local show = icon_line ~= "" or workspace_index == focused_workspace_index
+        if icon_line == "" then
+            icon_line = " —"
         end
         sbar.animate("tanh", 10, function()
-            if no_app then
-                if workspace_index == focused_workspace_index then
-                    -- Show placeholder for empty focused workspace
-                    icon_line = " —"
-                    workspaces[workspace_index]:set({
-                        icon = { drawing = true },
-                        label = { drawing = true, string = icon_line },
-                        background = { drawing = true },
-                        padding_right = 1,
-                        padding_left = 4,
-                    })
-                    return
-                end
-
-                -- Hide empty unfocused workspaces
-                workspaces[workspace_index]:set({
-                    icon = { drawing = false },
-                    label = { drawing = false },
-                    background = { drawing = false },
-                    padding_right = 0,
-                    padding_left = 0,
-                })
-                return
-            end
-
             workspaces[workspace_index]:set({
-                icon = { drawing = true },
-                label = { drawing = true, string = icon_line },
-                background = { drawing = true },
-                padding_right = 1,
-                padding_left = 4,
+                icon = { drawing = show },
+                label = { drawing = show, string = icon_line },
+                background = { drawing = show },
+                padding_right = show and 1 or 0,
+                padding_left = show and 4 or 0,
             })
         end)
     end)
@@ -210,14 +185,19 @@ for workspace_index = 1, max_workspaces do
 
     -- Set initial workspace state
     updateWindows(workspace_index)
-    sbar.exec("aerospace list-workspaces --focused", function(focused_workspace)
-        workspaces[tonumber(focused_workspace)]:set({
+end
+
+sbar.exec("aerospace list-workspaces --focused", function(focused_workspace)
+    focused_workspace_index = tonumber(focused_workspace)
+    local workspace = workspaces[focused_workspace_index]
+    if workspace then
+        workspace:set({
             icon = { highlight = true },
             label = { highlight = true },
             background = { border_width = 2 },
         })
-    end)
-end
+    end
+end)
 
 -- Toggle visibility of workspace's labels(open windows)
 toggle_windows:subscribe("mouse.clicked", function()
