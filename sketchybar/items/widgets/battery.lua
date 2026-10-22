@@ -4,13 +4,13 @@ local settings = require("settings")
 
 local battery = sbar.add("item", "widgets.battery", {
 	position = "right",
-	icon = { string = icons.cpu },
+	icon = { string = icons.battery._100 },
 	label = {
 		font = {
 			family = settings.font.numbers,
 		},
 		color = colors.fg,
-		width = dynamic,
+		width = "dynamic",
 	},
 	padding_left = 0,
 	padding_right = 0,
@@ -39,7 +39,7 @@ battery:subscribe({ "routine", "power_source_change", "system_woke" }, function(
 		local found, _, charge = batt_info:find("(%d+)%%")
 		if found then
 			charge = tonumber(charge)
-			label = charge .. "%"
+			label = string.format("%02d%%", charge)
 		end
 
 		local color = colors.green
@@ -63,17 +63,12 @@ battery:subscribe({ "routine", "power_source_change", "system_woke" }, function(
 			end
 		end
 
-		local lead = ""
-		if found and charge < 10 then
-			lead = "0"
-		end
-
 		battery:set({
 			icon = {
 				string = icon,
 				color = color,
 			},
-			label = { string = lead .. label },
+			label = { string = label },
 		})
 	end)
 end)

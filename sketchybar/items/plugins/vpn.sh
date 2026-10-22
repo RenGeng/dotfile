@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VPN=$(scutil --nc list | grep Connected | sed -E 's/.*"(.*)".*/\1/')
+VPN=$(scutil --nc list | sed -nE '/Connected/s/.*"(.*)".*/\1/p')
 
 if [[ $VPN != "" ]]; then
   sketchybar -m --set widgets.vpn icon= \

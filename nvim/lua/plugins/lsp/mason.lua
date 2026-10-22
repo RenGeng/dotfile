@@ -40,7 +40,8 @@ return {
                 "shfmt",
                 "terraform-ls",
                 "tflint",
-                "yamlfmt"
+                "yamlfmt",
+                "yaml-language-server"
             },
         })
     end,

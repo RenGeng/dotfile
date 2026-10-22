@@ -27,11 +27,6 @@ local volume_bracket = sbar.add("bracket", "widgets.volume.bracket", {
     },
 })
 
--- sbar.add("item", "widgets.volume.padding", {
--- 	position = "right",
--- 	width = settings.group_paddings,
--- })
---
 local volume_slider = sbar.add("slider", popup_width, {
     position = "popup." .. volume_bracket.name,
     slider = {
@@ -39,7 +34,7 @@ local volume_slider = sbar.add("slider", popup_width, {
         background = {
             height = 6,
             corner_radius = 3,
-            color = colors.bg2,
+            color = colors.grey,
         },
         knob = {
             string = "􀀁",
@@ -62,14 +57,9 @@ volume:subscribe("volume_change", function(env)
         icon = icons.volume._10
     end
 
-    local lead = ""
-    if vol < 10 then
-        lead = "0"
-    end
-
     volume:set({
         icon = { string = icon },
-        label = { string = lead .. vol .. "%" },
+        label = { string = string.format("%02d%%", vol) },
     })
     volume_slider:set({ slider = { percentage = vol } })
 end)
@@ -80,7 +70,7 @@ local function volume_collapse_details()
         return
     end
     volume_bracket:set({ popup = { drawing = false } })
-    -- sbar.remove("/volume.device\\.*/")
+    sbar.remove("/volume.device\\..*/")
 end
 
 local current_audio_device = "None"
@@ -98,20 +88,16 @@ local function volume_toggle_details(env)
             sbar.exec("SwitchAudioSource -a -t output", function(available)
                 local current = current_audio_device
                 local counter = 0
-                local selected = false
 
                 for device in string.gmatch(available, "[^\r\n]+") do
-                    if current == device then
-                        selected = true
-                    end
                     sbar.add("item", "volume.device." .. counter, {
                         position = "popup." .. volume_bracket.name,
                         width = popup_width,
                         align = "center",
-                        label = { string = device, highlight = selected },
+                        label = { string = device, highlight = current == device },
                         click_script = 'SwitchAudioSource -s "'
                             .. device
-                            .. '" && sketchybar --set /volume.device\\.*/ label.color='
+                            .. '" && sketchybar --set /volume.device\\..*/ label.color='
                             .. colors.grey
                             .. " --set $NAME label.color="
                             .. colors.white,
@@ -131,20 +117,5 @@ local function volume_scroll(env)
 end
 
 volume:subscribe("mouse.clicked", volume_toggle_details)
--- volume:subscribe("mouse.entered", function()
--- 	sbar.animate("tanh", 30, function()
--- 		volume:set({
--- 			label = { width = "dynamic" },
--- 		})
--- 	end)
--- end)
---
--- volume:subscribe("mouse.exited", function()
--- 	sbar.animate("tanh", 30, function()
--- 		volume:set({
--- 			label = { width = 0 },
--- 		})
--- 	end)
--- end)
 volume:subscribe("mouse.scrolled", volume_scroll)
 volume:subscribe("mouse.exited.global", volume_collapse_details)

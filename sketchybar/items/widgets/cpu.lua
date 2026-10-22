@@ -17,9 +17,6 @@ local cpu = sbar.add("item", {
 		color = colors.fg,
 		width = "dynamic",
 	},
-	background = {
-		color = colors.with_alpha(colors.bg, 1),
-	},
 })
 
 cpu:subscribe("cpu_update", function(env)
